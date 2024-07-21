@@ -1,0 +1,43 @@
+---
+title: "gt package_conversation_tom_mock"
+format: html
+---
+
+## [Making high-quality tables in R with the gt package: a conversation with Tom Mock](https://www.youtube.com/watch?v=dxDeotwylr8)
+
+```{r}
+library(tidyverse)
+library(tidytuesdayR)
+library(gt)
+```
+
+```{r}
+tuesdata <- tidytuesdayR::tt_load(2020, "36")
+```
+
+```{r}
+country_sel <- c("China", "India", "United States", "Indonesia", "Mexico", "Pakistan")
+
+yield_data <- tuesdata$key_crop_yields |> 
+  janitor::clean_names() |> 
+  rename_with(~str_remove(., "_tonnes_per_hectare")) |> 
+  select(entity:beans, -code) |> 
+  pivot_longer(
+    cols = wheat:beans, 
+    names_to = "crop", 
+    values_to = "yield"
+  ) |> 
+  rename(Country = entity)
+```
+
+## Offset heads from body
+
+```{r}
+# Press F2 to see potato_data in the viewer pane without having to use the View option
+potato_data <- yield_data |> 
+  filter(Country %in% country_sel, crop == "potatoes", year %in% c(2013:2016)) |> 
+  pivot_wider(
+    names_from = year, 
+    values_from = yield
+  )
+```
